@@ -1,17 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-const readline = require('readline');
-const outStream = new (require('stream'))();
 
-function processFile(inputFile, onLine, onClose) {
-  const inputStream = fs.createReadStream(path.join(__dirname, inputFile));
-  const rl = readline.createInterface(inputStream, outStream);
-
-  rl.on('line', (line) => onLine(line));
-  rl.on('close', () => onClose());
-}
-
-const frequencyData = [];
+const frequencyData = fs.readFileSync(path.join(__dirname, 'data.txt'))
+  .toString()
+  .split('\n')
+  .slice(0, -1);
 
 const calibrateFrequency = () => {
   const result = frequencyData.reduce((res, cur) => res + Number(cur), 0);
@@ -19,6 +12,25 @@ const calibrateFrequency = () => {
   console.log(result);
 };
 
-processFile('data.txt', (el) => {
-  frequencyData.push(el);
-}, calibrateFrequency);
+const findFirstRepeatedFrequency = () => {
+  const len = frequencyData.length;
+  const results = [0];
+  let currentFrequency = 0;
+  let i = 0;
+
+  while (true) {
+    i = i % len;
+    currentFrequency += Number(frequencyData[i++]);
+
+    if (results.includes(currentFrequency)) {
+      console.log(currentFrequency);
+
+      return;
+    }
+
+    results.push(currentFrequency);
+  }
+};
+
+calibrateFrequency();
+findFirstRepeatedFrequency();
