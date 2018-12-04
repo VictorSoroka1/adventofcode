@@ -4,11 +4,7 @@ const { parseFile } = require('../utils/parseFile');
 
 const frequencyData = parseFile(path.join(__dirname, 'data.txt'));
 
-const calibrateFrequency = () => {
-  const result = frequencyData.reduce((res, cur) => res + Number(cur), 0);
-
-  console.log(result);
-};
+const calibrateFrequency = () => frequencyData.reduce((res, cur) => res + Number(cur), 0);
 
 const findFirstRepeatedFrequency = () => {
   const len = frequencyData.length;
@@ -21,14 +17,12 @@ const findFirstRepeatedFrequency = () => {
     currentFrequency += Number(frequencyData[i++]);
 
     if (results.includes(currentFrequency)) {
-      console.log(currentFrequency);
-
-      return;
+      return currentFrequency;
     }
 
     results.push(currentFrequency);
   }
 };
 
-calibrateFrequency();
-findFirstRepeatedFrequency();
+console.log('Part 1:', calibrateFrequency());
+console.log('Part 2:', findFirstRepeatedFrequency());

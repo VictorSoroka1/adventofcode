@@ -14,7 +14,7 @@ const parseCheckSumChunk = (chunk) => {
 };
 
 const findFirstRepeatedFrequency = () => {
-  const result = checkSums
+  return checkSums
     .reduce((res, cur) => {
       const parsedCheckSumChunk = parseCheckSumChunk(cur);
       const set = new Set(Object.values(parsedCheckSumChunk));
@@ -25,8 +25,35 @@ const findFirstRepeatedFrequency = () => {
       ];
     }, [0, 0])
     .reduce((res, cur) => res * cur);
-
-  console.log(result);
 };
 
-findFirstRepeatedFrequency();
+const findCommonLettersIDs = () => {
+  const len = checkSums.length;
+  const checkSumLen = checkSums[0].length;
+
+  for (let i = 0; i < len; i++) {
+    const currentCheckSum = checkSums[i];
+
+    for (let j = i + 1; j < len; j++) {
+      const checkSumToCompare = checkSums[j];
+      let fails = [];
+
+      for (let z = 0; z < checkSumLen; z++) {
+        if (currentCheckSum[z] !== checkSumToCompare[z]) {
+          fails.push(z);
+        }
+
+        if (fails.length > 1) {
+          continue;
+        }
+
+        if (z === checkSumLen - 1) {
+          return currentCheckSum.slice(0, fails[0]) + currentCheckSum.slice(fails[0] + 1);
+        }
+      }
+    }
+  }
+};
+
+console.log('Part 1:', findFirstRepeatedFrequency());
+console.log('Part 2:', findCommonLettersIDs());
