@@ -1,10 +1,8 @@
-const fs = require('fs');
 const path = require('path');
 
-const frequencyData = fs.readFileSync(path.join(__dirname, 'data.txt'))
-  .toString()
-  .split('\n')
-  .slice(0, -1);
+const { parseFile } = require('../utils/parseFile');
+
+const frequencyData = parseFile(path.join(__dirname, 'data.txt'));
 
 const calibrateFrequency = () => {
   const result = frequencyData.reduce((res, cur) => res + Number(cur), 0);

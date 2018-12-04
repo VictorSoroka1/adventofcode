@@ -1,0 +1,12 @@
+{
+  "name": "adventofcode-2018",
+  "version": "1.0.0",
+  "description": "https://adventofcode.com/2018",
+  "scripts": {
+    "2018-1": "node 1/index.js",
+    "2018-2": "node 2/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
