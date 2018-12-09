@@ -2,15 +2,21 @@ const path = require('path');
 
 const { parseFile } = require('../utils/parseFile');
 
-const claimsData = parseFile(path.join(__dirname, 'data.txt'));
-
 const parseClaimData = (cl) => {
   return cl.match(/(\d+)/g).map(Number);
 };
 
+const claimsData = parseFile(path.join(__dirname, 'data.txt'))
+  .map(parseClaimData)
+  .reduce((res, [id, x, y, width, height]) => {
+    res.set(id, { x, y, width, height });
+
+    return res;
+  }, new Map());
+
 const generateClaimsData = () => {
-  return claimsData.reduce((res, claimData) => {
-    const [id, x, y, width, height] = parseClaimData(claimData);
+  return Array.from(claimsData.keys()).reduce((res, id) => {
+    const { x, y, width, height } = claimsData.get(id);
 
     for (let i = x; i < (x + width); i++) {
       for (let j = y; j < (y + height); j++) {
@@ -22,12 +28,27 @@ const generateClaimsData = () => {
   }, {});
 };
 
-const findOverlappedClaims = () => {
-  const generatedClaims = generateClaimsData();
+const generatedClaims = generateClaimsData();
 
+const findOverlappedClaimsCount = () => {
   return Object.keys(generatedClaims).reduce((res, key) => {
     return generatedClaims[key].length > 1 ? res + 1 : res;
   }, 0);
 };
 
-console.log('Part 1:', findOverlappedClaims());
+const findIntactClaimId = () => {
+  const overlappedClaimsIds = Object.keys(generatedClaims).reduce((res, key) => {
+    return generatedClaims[key].length > 1
+      ? new Set(Array.from(res).concat(generatedClaims[key]))
+      : res;
+  }, new Set());
+
+  for (let id of claimsData.keys()) {
+    if (!overlappedClaimsIds.has(id)) {
+      return id;
+    }
+  }
+};
+
+console.log('Part 1:', findOverlappedClaimsCount());
+console.log('Part 2:', findIntactClaimId());
