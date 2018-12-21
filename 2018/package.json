@@ -7,6 +7,7 @@
     "2018-2": "node 2/index.js",
     "2018-3": "node 3/index.js",
     "2018-4": "node 4/index.js",
+    "2018-5": "node 5/index.js",
     "2018-8": "node 8/index.js"
   },
   "keywords": [],
