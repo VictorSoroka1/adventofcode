@@ -1,6 +1,6 @@
 const path = require('path');
 
-const { parseFile } = require('../utils/parseFile');
+const { parseFile } = require('../../utils/parseFile');
 
 const licenseData = parseFile(path.join(__dirname, 'data.txt'))[0]
   .split(' ')

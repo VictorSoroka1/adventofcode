@@ -1,0 +1,25 @@
+{
+  "name": "adventofcode",
+  "version": "1.0.0",
+  "description": "This project contains my solutions for advert of code puzzles. [Advent of Code](https://adventofcode.com) is an Advent calendar of small programming puzzles for a variety of skill sets and skill levels that can be solved in any programming language you like. People use them as a speed contest, interview prep, company training, university coursework, practice problems, or to challenge each other.",
+  "scripts": {
+    "2018-1": "node 2018/1/index.js",
+    "2018-2": "node 2018/2/index.js",
+    "2018-3": "node 2018/3/index.js",
+    "2018-4": "node 2018/4/index.js",
+    "2018-5": "node 2018/5/index.js",
+    "2018-7": "node 2018/7/index.js",
+    "2018-8": "node 2018/8/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ViktorSoroka/adventofcode.git"
+  },
+  "keywords": ["javascript", "puzzles"],
+  "author": "Viktor Soroka",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ViktorSoroka/adventofcode/issues"
+  },
+  "homepage": "https://github.com/ViktorSoroka/adventofcode#readme"
+}
