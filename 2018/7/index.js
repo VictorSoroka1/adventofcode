@@ -6,7 +6,6 @@ const instructions = parseFile(path.join(__dirname, 'data.txt'));
 
 const createNode = () => {
   return {
-    isVisited: false,
     children: [],
     parents: [],
     addChild(child) {
@@ -18,7 +17,7 @@ const createNode = () => {
   }
 };
 
-const nodes = instructions.reduce((nodes, node) => {
+const generateNodes = () => instructions.reduce((nodes, node) => {
   const [, parentNodeKey, childNodeKey] = node.match(/step (\w).*?step (\w)/i);
 
   let currentParentNode = nodes[parentNodeKey];
@@ -38,37 +37,95 @@ const nodes = instructions.reduce((nodes, node) => {
   return nodes;
 }, {});
 
-function calculateSequence(currentNodes, seq = '') {
-  const sortedNodes = [...currentNodes].sort();
-  const [curNodeKey, ...queue] = sortedNodes;
+const getItemTime = item => item.charCodeAt(0) - 4;
 
-  if (!curNodeKey) {
-    return seq;
+const calculateOrder = data => {
+  const rootNodes = Object.keys(data)
+    .filter(nodeKey => !data[nodeKey].parents.length);
+  const nodesSize = Object.keys(data).length;
+  const visitedNodes = [];
+
+  let order = '';
+  let sortedNodes = rootNodes;
+
+  while (visitedNodes.length !== nodesSize) {
+    sortedNodes.sort();
+
+    const curNodeKey = sortedNodes.shift();
+    const currentNode = data[curNodeKey];
+
+    visitedNodes.push(curNodeKey);
+    order += curNodeKey;
+
+    currentNode.children.forEach((childKey) => {
+      const childNode = data[childKey];
+
+      const parentsVisited = childNode.parents
+        .every((parentKey) => visitedNodes.includes(parentKey));
+
+      if (parentsVisited) {
+        sortedNodes.push(childKey);
+      }
+    });
   }
 
-  const currentNode = nodes[curNodeKey];
+  return order;
+};
 
-  currentNode.isVisited = true;
-  seq += curNodeKey;
+const calculateStepDuration = (data, workersAmount = 5) => {
+  const workers = Array.from({ length: workersAmount }, () => ({
+    end: null,
+    nodeKey: null,
+  }));
 
-  currentNode.children.forEach((childKey) => {
-    const childNode = nodes[childKey];
+  const rootNodes = Object.keys(data)
+    .filter(nodeKey => !data[nodeKey].parents.length);
+  const nodesSize = Object.keys(data).length;
+  let visitedNodes = [];
+  let totalSeconds = 0;
 
-    const isParentsCompleted = childNode.parents.every((parentKey) => {
-      const parentNode = nodes[parentKey];
+  let sortedNodes = rootNodes;
 
-      return parentNode.isVisited;
+  while (visitedNodes.length !== nodesSize) {
+    sortedNodes.sort();
+
+    const readyWorkers = workers
+      .filter(worker => worker.end <= totalSeconds);
+
+    const availableNodes = sortedNodes.length;
+
+    readyWorkers.forEach((worker, i) => {
+      let currentNode = data[worker.nodeKey];
+
+      if (worker.end !== totalSeconds && i < availableNodes) {
+        worker.nodeKey = sortedNodes.shift();
+        worker.end = totalSeconds + getItemTime(worker.nodeKey) - 1;
+        currentNode = data[worker.nodeKey];
+      }
+
+      if (currentNode && worker.end === totalSeconds) {
+        visitedNodes.push(worker.nodeKey);
+
+        currentNode.children.forEach((childKey) => {
+          const childNode = data[childKey];
+
+          const parentsVisited = childNode.parents
+            .every((parentKey) => visitedNodes.includes(parentKey));
+
+          if (parentsVisited) {
+            sortedNodes.push(childKey);
+          }
+        });
+      }
     });
 
-    if (isParentsCompleted) {
-      queue.push(childKey);
-    }
-  });
+    totalSeconds++;
+  }
 
-  return calculateSequence(queue, seq);
-}
+  return totalSeconds;
+};
 
-const parentNodes = Object.keys(nodes)
-  .filter(nodeKey => !nodes[nodeKey].parents.length);
+const nodes = generateNodes();
 
-console.log('Part 1:', calculateSequence(parentNodes));
+console.log('Part 1:', calculateOrder(nodes));
+console.log('Part 2:', calculateStepDuration(nodes));
